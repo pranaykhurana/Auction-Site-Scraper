@@ -3,3 +3,4 @@ selenium==4.4.3
 lxml==4.9.1
 sendgrid==6.9.7
 supabase==0.5.8
+decouple==0.0.7
