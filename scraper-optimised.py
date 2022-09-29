@@ -65,7 +65,7 @@ class Scraper():
                 message_queue = []
                 query : Client = self.supa_client.table("Products").select("*").filter("url", "ilike", f"{item['url']}").order("created_at", desc=True).execute()
                 previous = query.data[0]
-                if item['price'] > previous['price']:
+                if int(item['price']) > previous['price']:
                     message = f'Price of {item["title"]} increased from {previous["price"]} to {item["price"]} \n Click here to view {item["url"]} \n'
                     message_queue.append(message)
                 
