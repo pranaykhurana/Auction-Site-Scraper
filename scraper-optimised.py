@@ -112,7 +112,7 @@ class Scraper():
     def _run(self):
         self.startScraper()
         self.sendMessage()
-        # self.writeRecords()
+        self.writeRecords()
 
 
 s = Scraper()
