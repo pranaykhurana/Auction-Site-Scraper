@@ -79,35 +79,40 @@ class Scraper():
     def sendMessage(self):
         emailTemplate = ''
         messages = self.getData()
-        if len(messages) == 0:
+        if len(messages) > 0:
+            for message in messages:
+                emailTemplate += message
+
+            try:
+                fromEmail = config('FROM_EMAIL')
+                fromPassword = config('FROM_PASSWORD')
+                toEmail = config('TO_EMAIL')
+
+                message = MIMEMultipart()
+                message['From'] = fromEmail
+                message['To'] = toEmail
+                message['Subject'] = 'Auction Price Updates' 
+
+                message.attach(MIMEText(emailTemplate, 'plain'))
+
+                session = smtplib.SMTP('smtp.gmail.com', 587)
+                session.starttls()
+                session.login(fromEmail, fromPassword)
+                text = message.as_string()
+                session.sendmail(fromEmail, toEmail, text)
+                session.quit()
+
+            except Exception as e:
+                print('Something went wrong...', e)
+        
+        else:
             from datetime import datetime
             now = datetime.now()
-            sys.exit(f"No updates found at {now}")
+            with open('logfile.txt', 'a+') as file:
+                file.write(f"No updates found at {now}")
+                file.write('\n')
     
-        for message in messages:
-            emailTemplate += message
-
-        try:
-            fromEmail = config('FROM_EMAIL')
-            fromPassword = config('FROM_PASSWORD')
-            toEmail = config('TO_EMAIL')
-
-            message = MIMEMultipart()
-            message['From'] = fromEmail
-            message['To'] = toEmail
-            message['Subject'] = 'Auction Price Updates' 
-
-            message.attach(MIMEText(emailTemplate, 'plain'))
-
-            session = smtplib.SMTP('smtp.gmail.com', 587)
-            session.starttls()
-            session.login(fromEmail, fromPassword)
-            text = message.as_string()
-            session.sendmail(fromEmail, toEmail, text)
-            session.quit()
-
-        except Exception as e:
-            print('Something went wrong...', e)
+        
 
     def _run(self):
         self.startScraper()
